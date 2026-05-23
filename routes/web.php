@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('routestatistics')->group(function () {
+Route::middleware([])->group(function () {
     Route::controller(HomeController::class)->group(function () {
         Route::get('/', 'index')
             ->name('home.index');

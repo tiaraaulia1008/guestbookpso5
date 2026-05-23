@@ -9,7 +9,7 @@ class Guest extends Model
 {
     use HasFactory;
 
-    protected $table = 'guests';
+    protected $table = 'guest';
 
     protected $primaryKey = 'id';
 
