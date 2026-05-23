@@ -2,43 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RegistrationRequest;
 use App\Models\Guest;
-use App\Models\Staff;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\File;
 
 class GuestRegistrationController extends Controller
 {
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(): View
     {
-        $staffs = Staff::select(['id', 'name'])
-            ->orderBy('name')
-            ->get();
-
-        return view('home.registration', compact('staffs'));
+        return view('home.registration');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(RegistrationRequest $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $guest = new Guest;
-        $guest->name = $request->input('name');
-        $guest->gender = $request->input('gender');
-        $guest->email = $request->input('email');
-        $guest->phone_number = $request->input('phone_number');
-        $guest->company = $request->input('company');
-        $guest->address = $request->input('address');
-        $guest->purpose = $request->input('purpose');
-        $guest->staff_id = $request->input('staff_id');
+        $guest = new Guest();
+
+        $guest->name = $request->name;
+        $guest->company = $request->company;
+        $guest->message = $request->message;
+
+        if ($request->photo_data) {
+
+            $image = $request->photo_data;
+
+            $image = str_replace('data:image/png;base64,', '', $image);
+            $image = str_replace(' ', '+', $image);
+
+            $imageName = time() . '.png';
+
+            File::put(
+                public_path('uploads/') . $imageName,
+                base64_decode($image)
+            );
+
+            $guest->photo_url = 'uploads/' . $imageName;
+        }
+
         $guest->save();
 
-        return redirect()->route('home.index')
-            ->with('message', 'The guest has been created.');
+        return redirect('/')
+            ->with('success', 'Wishes submitted successfully ✨');
     }
 }
