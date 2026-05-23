@@ -1,0 +1,51 @@
+name: Guestbook CI/CD Prototype
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Copy Environment
+        run: cp .env.example .env
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Check Laravel Version
+        run: php artisan --version
+
+      - name: Run Basic Tests
+        run: php artisan route:list
+
+  deploy-mockup:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Simulate Deployment
+        run: |
+          echo "Deploying Guestbook Application..."
+          echo "Target: Azure App Service"
+          echo "Database: Supabase PostgreSQL"
+          echo "Deployment Successful!"
