@@ -1,10 +1,9 @@
-name: Guestbook CI/CD Prototype
+name: Guestbook CI/CD Prototype (Week 4)
 
 on:
   push:
     branches:
       - master
-
   pull_request:
     branches:
       - master
@@ -14,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -22,21 +20,35 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
+          extensions: mbstring, pdo, pdo_pgsql, sqlite3
+          coverage: none
 
       - name: Copy Environment
         run: cp .env.example .env
 
       - name: Install Dependencies
-        run: composer install --no-interaction --prefer-dist
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Generate Application Key
         run: php artisan key:generate
 
-      - name: Check Laravel Version
-        run: php artisan --version
+      # Bikin database sqlite ringan khusus buat testing di GitHub
+      - name: Create SQLite Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
 
-      - name: Run Basic Tests
-        run: php artisan route:list
+      - name: Run Application Tests
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan test
+
+      - name: Cache Laravel Configuration (Prep for Deploy)
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
 
   deploy-mockup:
     needs: build-and-test
@@ -45,7 +57,9 @@ jobs:
     steps:
       - name: Simulate Deployment
         run: |
+          echo "=================================="
           echo "Deploying Guestbook Application..."
-          echo "Target: Azure App Service"
-          echo "Database: Supabase PostgreSQL"
-          echo "Deployment Successful!"
+          echo "Target Platform : Azure App Service"
+          echo "Database        : Supabase PostgreSQL"
+          echo "Status          : SUCCESS"
+          echo "=================================="
