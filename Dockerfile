@@ -20,19 +20,28 @@ RUN npm run build
 FROM php:8.2-apache
 
 # Install system dependencies & ekstensi PHP untuk PostgreSQL (Supabase)
+# (Kode sebelum bagian ini biarkan saja)
+
+# Install system dependencies & ekstensi PHP (tambah libpng, libjpeg, libfreetype untuk GD)
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     zip \
     unzip \
     git \
-    && docker-php-ext-install pdo pdo_pgsql pgsql zip
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql pgsql zip gd
 
 # Aktifkan mod_rewrite Apache supaya routing web Laravel berfungsi (.htaccess)
 RUN a2enmod rewrite
 
-# Ubah Document Root Apache ke folder /public milik Laravel
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+# Ubah Document Root Apache ke folder /public milik Laravel (Perbaikan warning ENV)
+ENV APACHE_DOCUMENT_ROOT="/var/www/html/public"
+
+# (Kode setelah bagian ini biarkan saja)
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
