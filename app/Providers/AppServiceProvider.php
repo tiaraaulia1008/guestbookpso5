@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Providers;
+use Illuminate\Support\Facades\URL;
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
@@ -22,5 +23,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::defaultView('layout.pagination');
         Paginator::defaultSimpleView('layout.pagination');
+        if (config('app.env') === 'production') {
+        URL::forceScheme('https');
+    }
     }
 }
