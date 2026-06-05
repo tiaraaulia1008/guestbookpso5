@@ -50,16 +50,43 @@ jobs:
           php artisan route:cache
           php artisan view:cache
 
-  deploy-mockup:
+  build-and-deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
+    
+    # Permission ini wajib ada supaya GitHub Actions diizinkan nge-push image ke GHCR
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - name: Simulate Deployment
-        run: |
-          echo "=================================="
-          echo "Deploying Guestbook Application..."
-          echo "Target Platform : Azure App Service"
-          echo "Database        : Supabase PostgreSQL"
-          echo "Status          : SUCCESS"
-          echo "=================================="
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Ini token otomatis dari GitHub, ga perlu dibikin manual
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'guestbook-crud' # GANTI DENGAN NAMA APP DI AZURE
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: ${{ steps.meta.outputs.tags }}
