@@ -44,12 +44,6 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: php artisan test
 
-      - name: Cache Laravel Configuration (Prep for Deploy)
-        run: |
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
-
   build-and-deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
