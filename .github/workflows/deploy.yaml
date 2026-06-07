@@ -1,86 +1,96 @@
-name: Guestbook CI/CD Prototype (Week 4)
+name: Guestbook CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+push:
+branches:
+- master
+pull_request:
+branches:
+- master
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+test-and-quality:
+name: Testing & Quality Assurance
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+```
+steps:
+  - name: Checkout Repository
+    uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, pdo, pdo_pgsql, sqlite3
-          coverage: none
+  - name: Setup PHP
+    uses: shivammathur/setup-php@v2
+    with:
+      php-version: "8.2"
+      extensions: mbstring, pdo, pdo_pgsql, sqlite3
+      coverage: none
 
-      - name: Copy Environment
-        run: cp .env.example .env
+  - name: Copy Environment File
+    run: cp .env.example .env
 
-      - name: Install Dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+  - name: Install Composer Dependencies
+    run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Generate Application Key
-        run: php artisan key:generate
+  - name: Generate Application Key
+    run: php artisan key:generate
 
-      # Bikin database sqlite ringan khusus buat testing di GitHub
-      - name: Create SQLite Database
-        run: |
-          mkdir -p database
-          touch database/database.sqlite
+  - name: Create SQLite Database
+    run: |
+      mkdir -p database
+      touch database/database.sqlite
 
-      - name: Run Application Tests
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
-        run: php artisan test
+  - name: Run PHPUnit Tests
+    env:
+      DB_CONNECTION: sqlite
+      DB_DATABASE: database/database.sqlite
+    run: php artisan test
 
-  build-and-deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    
-    # Permission ini wajib ada supaya GitHub Actions diizinkan nge-push image ke GHCR
-    permissions:
-      contents: read
-      packages: write
+SONARQUBE SECTION:
+- name: SonarQube Scan
+uses: SonarSource/sonarqube-scan-action@v5
+env:
+SONAR_TOKEN: ${{ a94ddaa846e3ea2a00c071fff424f8824fedaec0 }}
+```
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+build-and-deploy:
+name: Build Docker Image & Deploy
+needs: test-and-quality
+runs-on: ubuntu-latest
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }} # Ini token otomatis dari GitHub, ga perlu dibikin manual
+```
+permissions:
+  contents: read
+  packages: write
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
+steps:
+  - name: Checkout Repository
+    uses: actions/checkout@v4
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+  - name: Login to GitHub Container Registry
+    uses: docker/login-action@v3
+    with:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'guestbook-crud' # GANTI DENGAN NAMA APP DI AZURE
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: ${{ steps.meta.outputs.tags }}
+  - name: Generate Docker Metadata
+    id: meta
+    uses: docker/metadata-action@v5
+    with:
+      images: ghcr.io/${{ github.repository }}
+
+  - name: Build and Push Docker Image
+    uses: docker/build-push-action@v5
+    with:
+      context: .
+      push: true
+      tags: ${{ steps.meta.outputs.tags }}
+      labels: ${{ steps.meta.outputs.labels }}
+
+  - name: Deploy to Azure Web App
+    uses: azure/webapps-deploy@v2
+    with:
+      app-name: guestbook-crud
+      publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+      images: ${{ steps.meta.outputs.tags }}
+```
