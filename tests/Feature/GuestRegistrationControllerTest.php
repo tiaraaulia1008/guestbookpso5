@@ -26,7 +26,7 @@ class GuestRegistrationControllerTest extends TestCase
 
         $response = $this->post(route('registration.store'), $data);
         $response->assertRedirect('/');
-        $this->assertDatabaseHas('guests', ['name' => 'Tiara']);
+        $this->assertDatabaseHas('guest', ['name' => 'Tiara']);
     }
 
     public function test_registration_fails_without_name(): void
