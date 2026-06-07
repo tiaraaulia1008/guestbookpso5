@@ -45,11 +45,10 @@ steps:
       DB_DATABASE: database/database.sqlite
     run: php artisan test
 
-SONARQUBE SECTION:
-- name: SonarQube Scan
-uses: SonarSource/sonarqube-scan-action@v5
-env:
-SONAR_TOKEN: ${{ a94ddaa846e3ea2a00c071fff424f8824fedaec0 }}
+  - name: SonarQube Scan
+    uses: SonarSource/sonarqube-scan-action@v5
+    env:
+      SONAR_TOKEN: ${{ secrets.193250c4439d650196cb3e95dec89d24133a7ed2 }}
 ```
 
 build-and-deploy:
