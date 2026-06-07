@@ -5,6 +5,26 @@ use App\Http\Controllers\GuestRegistrationController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
+Route::middleware([])->group(function () {
+
+    Route::controller(HomeController::class)->group(function () {
+        Route::get('/', 'index')
+            ->name('home.index');
+    });
+
+    Route::controller(GuestRegistrationController::class)->group(function () {
+        Route::get('guest/registration', 'create')
+            ->name('registration.create');
+        Route::post('guest/registration/create', 'store')
+            ->name('registration.store');
+    });
+
+    Route::resources([
+        'guests' => GuestController::class,
+    ]);
+
+});
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
