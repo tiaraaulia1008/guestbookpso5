@@ -186,7 +186,6 @@ return [
          * Package Service Providers...
          */
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        LaravelCaptcha\Providers\LaravelCaptchaServiceProvider::class,
 
         /*
          * Application Service Providers...
