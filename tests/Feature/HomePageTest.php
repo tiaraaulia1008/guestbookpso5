@@ -15,4 +15,18 @@ class HomePageTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_homepage_search_can_be_accessed(): void
+    {
+        $response = $this->get('/?search=Tiara');
+
+        $response->assertStatus(200);
+    }
+
+    public function test_invalid_page_returns_404(): void
+    {
+        $response = $this->get('/?page=999');
+
+        $response->assertStatus(404);
+    }
 }

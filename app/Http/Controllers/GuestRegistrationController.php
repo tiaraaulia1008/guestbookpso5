@@ -18,13 +18,15 @@ class GuestRegistrationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => 'required',
-            'message' => 'required'
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'company' => 'required|string|max:255',
+            'message' => 'required|string',
         ]);
 
         $photoUrl = null;
 
-        if ($request->photo_data) {
+        if ($request->filled('photo_data')) {
 
             $image = str_replace(
                 'data:image/png;base64,',
@@ -34,32 +36,20 @@ class GuestRegistrationController extends Controller
 
             $image = base64_decode($image);
 
-            $fileName =
-                'guest_' .
-                time() .
-                '.png';
+            $fileName = 'guest_' . time() . '.png';
 
             Http::withHeaders([
-                'Authorization' =>
-                    'Bearer ' .
-                    env('SUPABASE_SERVICE_KEY'),
-
-                'apikey' =>
-                    env('SUPABASE_SERVICE_KEY'),
-
-                'Content-Type' =>
-                    'image/png'
+                'Authorization' => 'Bearer ' . env('SUPABASE_SERVICE_KEY'),
+                'apikey' => env('SUPABASE_SERVICE_KEY'),
+                'Content-Type' => 'image/png',
             ])
-            ->withBody(
-                $image,
-                'image/png'
-            )
+            ->withBody($image, 'image/png')
             ->post(
-                env('SUPABASE_URL') .
-                '/storage/v1/object/' .
-                env('SUPABASE_BUCKET') .
-                '/' .
-                $fileName
+                env('SUPABASE_URL')
+                . '/storage/v1/object/'
+                . env('SUPABASE_BUCKET')
+                . '/'
+                . $fileName
             );
 
             $photoUrl =
@@ -72,10 +62,10 @@ class GuestRegistrationController extends Controller
 
         Guest::create([
             'name' => $request->name,
-            'company' => $request->company,
             'email' => $request->email,
+            'company' => $request->company,
             'message' => $request->message,
-            'photo_url' => $photoUrl
+            'photo_url' => $photoUrl,
         ]);
 
         return redirect('/')

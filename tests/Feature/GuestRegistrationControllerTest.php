@@ -12,40 +12,68 @@ class GuestRegistrationControllerTest extends TestCase
     public function test_registration_page_can_be_accessed(): void
     {
         $response = $this->get(route('registration.create'));
+
         $response->assertStatus(200);
     }
 
-    public function test_guest_registration_can_be_stored_without_photo(): void
+    public function test_guest_registration_can_be_stored(): void
     {
-        $data = [
-            'name'    => 'Tiara',
-            'email'   => 'tiara@example.com',
-            'company' => 'PT Test',
-            'message' => 'Selamat dan sukses!',
-        ];
+        $response = $this->post(route('registration.store'), [
+            'name' => 'Tiara',
+            'email' => 'tiara@example.com',
+            'company' => 'ITS',
+            'message' => 'Semangat',
+        ]);
 
-        $response = $this->post(route('registration.store'), $data);
         $response->assertRedirect('/');
-        $this->assertDatabaseHas('guest', ['name' => 'Tiara']);
+
+        $this->assertDatabaseHas('guest', [
+            'name' => 'Tiara',
+            'email' => 'tiara@example.com',
+        ]);
     }
 
     public function test_registration_fails_without_name(): void
     {
-        $data = [
-            'message' => 'Selamat!',
-        ];
+        $response = $this->post(route('registration.store'), [
+            'email' => 'tiara@example.com',
+            'company' => 'ITS',
+            'message' => 'Semangat',
+        ]);
 
-        $response = $this->post(route('registration.store'), $data);
         $response->assertSessionHasErrors('name');
+    }
+
+    public function test_registration_fails_without_email(): void
+    {
+        $response = $this->post(route('registration.store'), [
+            'name' => 'Tiara',
+            'company' => 'ITS',
+            'message' => 'Semangat',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+    }
+
+    public function test_registration_fails_without_company(): void
+    {
+        $response = $this->post(route('registration.store'), [
+            'name' => 'Tiara',
+            'email' => 'tiara@example.com',
+            'message' => 'Semangat',
+        ]);
+
+        $response->assertSessionHasErrors('company');
     }
 
     public function test_registration_fails_without_message(): void
     {
-        $data = [
+        $response = $this->post(route('registration.store'), [
             'name' => 'Tiara',
-        ];
+            'email' => 'tiara@example.com',
+            'company' => 'ITS',
+        ]);
 
-        $response = $this->post(route('registration.store'), $data);
         $response->assertSessionHasErrors('message');
     }
 }
