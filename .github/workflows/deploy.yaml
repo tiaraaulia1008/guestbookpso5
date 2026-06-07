@@ -1,96 +1,92 @@
 name: Guestbook CI/CD Pipeline
 
 on:
-push:
-branches:
-- master
-pull_request:
-branches:
-- master
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
 
 jobs:
-test-and-quality:
-name: Testing & Quality Assurance
-runs-on: ubuntu-latest
+  test-and-quality:
+    name: Testing & Quality Assurance
+    runs-on: ubuntu-latest
 
-```
-steps:
-  - name: Checkout Repository
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-  - name: Setup PHP
-    uses: shivammathur/setup-php@v2
-    with:
-      php-version: "8.2"
-      extensions: mbstring, pdo, pdo_pgsql, sqlite3
-      coverage: none
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, pdo, pdo_pgsql, sqlite3
+          coverage: none
 
-  - name: Copy Environment File
-    run: cp .env.example .env
+      - name: Copy Environment File
+        run: cp .env.example .env
 
-  - name: Install Composer Dependencies
-    run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-  - name: Generate Application Key
-    run: php artisan key:generate
+      - name: Generate Application Key
+        run: php artisan key:generate
 
-  - name: Create SQLite Database
-    run: |
-      mkdir -p database
-      touch database/database.sqlite
+      - name: Create SQLite Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
 
-  - name: Run PHPUnit Tests
-    env:
-      DB_CONNECTION: sqlite
-      DB_DATABASE: database/database.sqlite
-    run: php artisan test
+      - name: Run PHPUnit Tests
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan test
 
-  - name: SonarQube Scan
-    uses: SonarSource/sonarqube-scan-action@v5
-    env:
-      SONAR_TOKEN: ${{ secrets.193250c4439d650196cb3e95dec89d24133a7ed2 }}
-      # add token
-```
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.193250c4439d650196cb3e95dec89d24133a7ed2 }}
 
-build-and-deploy:
-name: Build Docker Image & Deploy
-needs: test-and-quality
-runs-on: ubuntu-latest
+  build-and-deploy:
+    name: Build Docker Image & Deploy
+    needs: test-and-quality
+    runs-on: ubuntu-latest
 
-```
-permissions:
-  contents: read
-  packages: write
+    permissions:
+      contents: read
+      packages: write
 
-steps:
-  - name: Checkout Repository
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-  - name: Login to GitHub Container Registry
-    uses: docker/login-action@v3
-    with:
-      registry: ghcr.io
-      username: ${{ github.actor }}
-      password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  - name: Generate Docker Metadata
-    id: meta
-    uses: docker/metadata-action@v5
-    with:
-      images: ghcr.io/${{ github.repository }}
+      - name: Generate Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
 
-  - name: Build and Push Docker Image
-    uses: docker/build-push-action@v5
-    with:
-      context: .
-      push: true
-      tags: ${{ steps.meta.outputs.tags }}
-      labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
-  - name: Deploy to Azure Web App
-    uses: azure/webapps-deploy@v2
-    with:
-      app-name: guestbook-crud
-      publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-      images: ${{ steps.meta.outputs.tags }}
-```
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: guestbook-crud
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: ${{ steps.meta.outputs.tags }}
