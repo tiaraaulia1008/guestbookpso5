@@ -1,19 +1,8 @@
 <?php
 
-use App\Http\Controllers\Auth\ForgotController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\Auth\ResetController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\ExportController;
-use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\GuestController;
-use App\Http\Controllers\GuestFeedbackController;
 use App\Http\Controllers\GuestRegistrationController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
 
 /*
