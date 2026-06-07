@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class GuestRegistrationControllerTest extends TestCase
@@ -29,6 +30,25 @@ class GuestRegistrationControllerTest extends TestCase
 
         $this->assertDatabaseHas('guest', [
             'name' => 'Tiara',
+            'email' => 'tiara@example.com',
+        ]);
+    }
+
+    public function test_guest_registration_can_be_stored_with_photo(): void
+    {
+        Http::fake();
+
+        $response = $this->post(route('registration.store'), [
+            'name' => 'Tiara',
+            'email' => 'tiara@example.com',
+            'company' => 'ITS',
+            'message' => 'Semangat',
+            'photo_data' => 'data:image/png;base64,' . base64_encode('fake-image'),
+        ]);
+
+        $response->assertRedirect('/');
+
+        $this->assertDatabaseHas('guest', [
             'email' => 'tiara@example.com',
         ]);
     }
