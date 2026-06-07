@@ -49,6 +49,7 @@ steps:
     uses: SonarSource/sonarqube-scan-action@v5
     env:
       SONAR_TOKEN: ${{ secrets.193250c4439d650196cb3e95dec89d24133a7ed2 }}
+      # add token
 ```
 
 build-and-deploy:
