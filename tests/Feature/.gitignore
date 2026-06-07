@@ -1,3 +1,5 @@
 *
 !.gitignore
 !HomePageTest.php
+!GuestControllerTest.php
+!GuestRegistrationControllerTest.php
