@@ -15,22 +15,17 @@
 
 
                 {{-- Header --}}
-                <div class="flex items-center justify-between mb-8">
+                <div class="relative flex items-center justify-center mb-8">
 
-
+                    {{-- Tombol Back dibuat absolute agar bebas dan tidak mendorong teks --}}
                     <a href="{{ route('home.index') }}"
-                        class="w-12 h-12 rounded-full bg-pink-200 hover:bg-pink-300 transition flex items-center justify-center text-pink-700 text-xl">
+                        class="absolute left-0 w-12 h-12 rounded-full bg-pink-200 hover:bg-pink-300 transition flex items-center justify-center text-pink-700 text-xl">
                         ←
                     </a>
 
-
-                    <h1 class="text-3xl font-bold text-pink-500">
+                    <h1 class="text-3xl font-bold text-pink-500 text-center">
                         Add Wishes ✨
                     </h1>
-
-
-                    <div class="w-12"></div>
-
 
                 </div>
 
