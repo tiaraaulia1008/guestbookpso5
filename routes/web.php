@@ -16,3 +16,10 @@ Route::controller(GuestRegistrationController::class)->group(function () {
     Route::post('guest/registration/create', 'store')
         ->name('registration.store');
 });
+
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/clear-cache', function () {
+    Artisan::call('optimize:clear');
+    return "Cache berhasil dihancurkan! Silakan kembali ke halaman utama.";
+});
