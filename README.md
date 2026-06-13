@@ -1,120 +1,106 @@
-# Guestbook
+```markdown
+# Guestbook App with CI/CD Pipeline
 
-The Guestbook project is a web application built using Laravel, Tw-Elements, and TailwindCSS for efficient guest management.
+A modern, responsive Guestbook web application built using Laravel, Tw-Elements, and TailwindCSS. This project features a fully automated CI/CD pipeline integrated with code quality analysis and containerized deployment.
 
-![Home Page](https://drive.usercontent.google.com/download?id=1xUzKFzDIsdWab_NsflDpi3XvBjAzA1V6)
+![Home Page](public/homepage.jpeg)
 
-## Table of Contents
+## 🚀 Tech Stack
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Features](#features)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+*   **Frontend:** HTML, TailwindCSS, Tw-Elements
+*   **Backend:** Laravel 11, PHP 8.2
+*   **Database:** Supabase (PostgreSQL)
+*   **Code Quality:** SonarQube & PHPUnit
+*   **Deployment:** Docker, GitHub Container Registry (GHCR), Microsoft Azure App Service
 
-## Installation
+## ✨ Features
 
-### Prerequisites
+*   **Guest Registration:** Visitors can leave their wishes, name, email, and company details.
+*   **Real-time Display:** Wishes are instantly displayed on the homepage.
+*   **Search Functionality:** Easily find specific guests or messages using the search bar.
+*   **Fully Responsive:** Optimized for both desktop and mobile viewing.
 
-Make sure you have the following installed:
+## ⚙️ CI/CD Architecture
 
-- [PHP](https://php.net) (v8 or higher)
-- [Node.js](https://nodejs.org) (v18 or higher)
-- [Composer](https://getcomposer.org) (v2 or higher)
-- [Laragon](https://laragon.org) / [XAMPP](https://apachefriends.org)
-- PHP extensions (ensure enabled in `php.ini`):
-  - [zip](https://www.php.net/manual/en/zip.installation.php)
-  - [gd](https://www.php.net/manual/en/book.image.php)
+This project implements a strict, two-stage CI/CD pipeline using GitHub Actions to ensure code quality and seamless deployment:
 
-### Steps to install
+```text
+Push to master
+      │
+      ▼
+┌─────────────────────────────────┐
+│  CI: Testing & Quality          │
+│  ├── Setup PHP 8.2 + PCOV       │
+│  ├── Install Composer & NPM     │
+│  ├── Build Frontend Assets      │
+│  ├── Run PHPUnit Tests          │
+│  │   └── Generate coverage.xml  │
+│  └── SonarCloud Scan            │
+└─────────────────┬───────────────┘
+                  │ only if CI passed
+                  ▼
+┌─────────────────────────────────┐
+│  CD: Build & Deploy             │
+│  ├── Build Docker Image         │
+│  ├── Push to GitHub Container   │
+│  │   Registry (ghcr.io)         │
+│  └── Deploy to Azure App Service│
+└─────────────────────────────────┘
+
+```
+
+1. **Continuous Integration (CI):**
+Runs automated tests using PHPUnit in an in-memory SQLite database and performs static code analysis using SonarQube to maintain code quality.
+2. **Continuous Deployment (CD):**
+Acts conditionally upon CI success. It builds a Docker image, pushes it to GHCR, and deploys the updated container to Microsoft Azure.
+
+## 🛠️ Local Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/memiljamel/project-guest-book-laravel.git
-   ```
 
-2. Navigate to the project directory:
-   ```bash
-   cd project-guest-book-laravel
-   ```
+```bash
+   git clone [https://github.com/tiaraaulia1008/guestbookpso5.git](https://github.com/tiaraaulia1008/guestbookpso5.git)
 
-3. Install dependencies.
-    - For Laravel/PHP projects:
-      ```bash
-      composer install
-      ```
-    - For Node.js projects:
-      ```bash
-      npm install
-      ```
+```
 
-4. Set up environment variables:
-   ```bash
+2. Navigate to the directory and install dependencies:
+
+```bash
+   cd guestbookpso5
+   composer install
+   npm install && npm run build
+
+```
+
+3. Set up the environment variables:
+
+```bash
    cp .env.example .env
-   ```
-   
-   Edit the `.env` file  with the necessary configuration values (database, environment, etc.).
 
-5. Generate application key:
-   ```bash
+```
+
+*Note: Update the `.env` file with your local database or Supabase credentials.*
+
+4. Generate the app key and run migrations:
+
+```bash
    php artisan key:generate
-   ```
-
-6. Run database migrations:
-   ```bash
    php artisan migrate
-   ```
 
-7. Seed the database with initial data (optional):
-   ```bash
-   php artisan db:seed
-   ```
+```
 
-8. Start the development server.
-    - For Laravel projects:
-      ```bash
-      php artisan serve
-      ```
-    - For Node.js projects:
-      ```bash
-      npm run dev
-      ```
+5. Start the local server:
 
-## Usage
+```bash
+   php artisan serve
 
-After completing the installation steps and the server is running, open your browser and navigate to [http://localhost:8000](http://localhost:8000).
+```
 
-Use the following credentials to access the application as an administrator:
-- **email:** admin@domain.com
-- **password:** aB3@fR8$9Jp
+## 📞 Contact
 
-> **Note:** It is recommended to change the default credentials after the first login for security purposes.
+* **Developer:** Shahnaz Ariqah Simanullang
+* **GitHub:** [github.com/shahnazariqahs](https://www.google.com/search?q=https://github.com/shahnazariqahs)
 
-## Features
+```
 
-- **Guest Registration:** Allows guests to register their information, including name, contact details, and visit purpose.
-- **Create Feedback:** Enables guests to submit feedback about their visit or experience.
-- **Authentication:** Provides login, password recovery, and reset functionalities for administrators.
-- **Dashboard:** Overview of recent guest activity.
-- **Manage Guests:** Enables administrators to view, create, edit, and delete guest information.
-- **Manage Staffs:** Enables administrators to view, create, edit, and delete staff information.
-- **Manage Department:** Enables administrators to view, create, edit, and delete department information.
-- **Manage Feedbacks:** Enables administrators to view, create, edit, and delete feedback information.
-- **Search Functionality:** Enables searching for specific records.
-- **Data Export:** Supports exporting data to PDF, Excel, and CSV formats.
-- **Edit Profile:** Enables administrators to update their profile information.
-
-## Contributing
-
-Feel free to contribute to this project by submitting pull requests or reporting issues.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
-
-## Contact
-
-- **Email:** [memiljamel@gmail.com](mailto:memiljamel@gmail.com)
-- **LinkedIn:** [linkedin.com/in/memiljamel](https://linkedin.com/in/memiljamel)
-- **GitHub:** [github.com/memiljamel](https://github.com/memiljamel)
+```

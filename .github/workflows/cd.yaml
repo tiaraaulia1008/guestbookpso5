@@ -1,0 +1,54 @@
+name: 2. Continuous Deployment (CD)
+
+# Memicu file ini HANYA JIKA file "1. Continuous Integration (CI)" selesai
+on:
+  workflow_run:
+    workflows: ["1. Continuous Integration (CI)"]
+    types:
+      - completed
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    name: Build Docker Image & Deploy
+    runs-on: ubuntu-latest
+
+    # KUNCI UTAMA: Hanya jalankan job ini kalau CI statusnya SUCCESS (Hijau)
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: guestbook-crud
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: ${{ steps.meta.outputs.tags }}
