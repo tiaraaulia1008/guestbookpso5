@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', 'Wedding Wishes')
+@section('title', 'Welcome')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-pink-50 to-blue-50 py-10 px-6">

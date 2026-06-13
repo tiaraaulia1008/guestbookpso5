@@ -1,28 +1,51 @@
-```markdown
 # Guestbook App with CI/CD Pipeline
 
-A modern, responsive Guestbook web application built using Laravel, Tw-Elements, and TailwindCSS. This project features a fully automated CI/CD pipeline integrated with code quality analysis and containerized deployment.
+A modern and responsive Guestbook web application built with Laravel, TailwindCSS, and Tw-Elements. This project implements a fully automated CI/CD pipeline, integrating automated testing, code quality analysis, containerization, and cloud deployment.
 
 ![Home Page](public/homepage.jpeg)
 
 ## 🚀 Tech Stack
 
-*   **Frontend:** HTML, TailwindCSS, Tw-Elements
-*   **Backend:** Laravel 11, PHP 8.2
-*   **Database:** Supabase (PostgreSQL)
-*   **Code Quality:** SonarQube & PHPUnit
-*   **Deployment:** Docker, GitHub Container Registry (GHCR), Microsoft Azure App Service
+### Frontend
+
+* HTML
+* TailwindCSS
+* Tw-Elements
+
+### Backend
+
+* Laravel 11
+* PHP 8.2
+
+### Database
+
+* Supabase (PostgreSQL)
+
+### Code Quality & Testing
+
+* PHPUnit
+* SonarCloud
+
+### Deployment
+
+* Docker
+* GitHub Container Registry (GHCR)
+* Microsoft Azure App Service
+
+---
 
 ## ✨ Features
 
-*   **Guest Registration:** Visitors can leave their wishes, name, email, and company details.
-*   **Real-time Display:** Wishes are instantly displayed on the homepage.
-*   **Search Functionality:** Easily find specific guests or messages using the search bar.
-*   **Fully Responsive:** Optimized for both desktop and mobile viewing.
+* **Guest Registration** – Visitors can submit their wishes along with their name, email, and company information.
+* **Real-Time Display** – Submitted wishes are instantly displayed on the homepage.
+* **Search Functionality** – Quickly search for specific guests or messages.
+* **Responsive Design** – Optimized for desktop, tablet, and mobile devices.
+
+---
 
 ## ⚙️ CI/CD Architecture
 
-This project implements a strict, two-stage CI/CD pipeline using GitHub Actions to ensure code quality and seamless deployment:
+This project implements a two-stage CI/CD pipeline using GitHub Actions to ensure code quality and seamless deployment.
 
 ```text
 Push to master
@@ -46,61 +69,80 @@ Push to master
 │  │   Registry (ghcr.io)         │
 │  └── Deploy to Azure App Service│
 └─────────────────────────────────┘
-
 ```
 
-1. **Continuous Integration (CI):**
-Runs automated tests using PHPUnit in an in-memory SQLite database and performs static code analysis using SonarQube to maintain code quality.
-2. **Continuous Deployment (CD):**
-Acts conditionally upon CI success. It builds a Docker image, pushes it to GHCR, and deploys the updated container to Microsoft Azure.
+### Continuous Integration (CI)
+
+The CI workflow automatically runs whenever changes are pushed to the `master` branch. The process includes:
+
+* Setting up PHP 8.2 and PCOV for code coverage.
+* Installing Composer and NPM dependencies.
+* Building frontend assets.
+* Running PHPUnit tests using an in-memory SQLite database.
+* Generating code coverage reports.
+* Performing static code analysis with SonarCloud.
+
+### Continuous Deployment (CD)
+
+The CD workflow is triggered only when the CI pipeline completes successfully. The process includes:
+
+* Building a Docker image of the application.
+* Publishing the image to GitHub Container Registry (GHCR).
+* Deploying the updated container image to Microsoft Azure App Service.
+
+---
 
 ## 🛠️ Local Installation
 
-1. Clone the repository:
+### 1. Clone the Repository
 
 ```bash
-   git clone [https://github.com/tiaraaulia1008/guestbookpso5.git](https://github.com/tiaraaulia1008/guestbookpso5.git)
-
+git clone https://github.com/tiaraaulia1008/guestbookpso5.git
 ```
 
-2. Navigate to the directory and install dependencies:
+### 2. Install Dependencies
 
 ```bash
-   cd guestbookpso5
-   composer install
-   npm install && npm run build
+cd guestbookpso5
 
+composer install
+
+npm install
+npm run build
 ```
 
-3. Set up the environment variables:
+### 3. Configure Environment Variables
 
 ```bash
-   cp .env.example .env
-
+cp .env.example .env
 ```
 
-*Note: Update the `.env` file with your local database or Supabase credentials.*
+Update the `.env` file with your local database configuration or Supabase credentials.
 
-4. Generate the app key and run migrations:
+### 4. Generate Application Key and Run Migrations
 
 ```bash
-   php artisan key:generate
-   php artisan migrate
+php artisan key:generate
 
+php artisan migrate
 ```
 
-5. Start the local server:
+### 5. Start the Development Server
 
 ```bash
-   php artisan serve
-
+php artisan serve
 ```
 
-## 📞 Contact
+The application will be available at:
 
-* **Developer:** Shahnaz Ariqah Simanullang
-* **GitHub:** [github.com/shahnazariqahs](https://www.google.com/search?q=https://github.com/shahnazariqahs)
-
+```text
+http://127.0.0.1:8000
 ```
+## 👥 Development Team
 
-```
+| No. | Full Name | NRP |
+| --- | --------- | --- |
+| 1   | Shahnaz Ariqah Simanullang | 5026231087 |
+| 2   | Aqilah Ummu Al Nawiswary | 5026231140 |
+| 3   | Tiara Aulia Azadirachta Indica | 5026231148 |
+
