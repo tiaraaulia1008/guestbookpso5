@@ -23,3 +23,4 @@ Route::get('/clear-cache', function () {
     Artisan::call('optimize:clear');
     return "Cache berhasil dihancurkan! Silakan kembali ke halaman utama.";
 });
+// spo5 try on
