@@ -38,7 +38,6 @@ A modern and responsive Guestbook web application built with Laravel, TailwindCS
 
 * **Guest Registration** – Visitors can submit their wishes along with their name, email, and company information.
 * **Real-Time Display** – Submitted wishes are instantly displayed on the homepage.
-* **Search Functionality** – Quickly search for specific guests or messages.
 * **Responsive Design** – Optimized for desktop, tablet, and mobile devices.
 
 ---
